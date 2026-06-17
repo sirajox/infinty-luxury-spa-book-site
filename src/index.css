@@ -1,0 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", ui-serif, Georgia, serif;
+  
+  --color-spa-bg: #FDFBF7;
+  --color-spa-cream: #F5F2EA;
+  --color-spa-sand: #E5DFC8;
+  --color-spa-sage: #A4B29E;
+  --color-spa-olive: #5A6B52;
+  --color-spa-charcoal: #2A2F2B;
+  --color-spa-text: #414541;
+  --color-spa-text-light: #70786F;
+  --color-spa-stone: #C4C4C4;
+  --color-spa-gold: #D4AF37;
+}
+
+@layer base {
+  body {
+    @apply bg-spa-bg text-spa-text font-sans antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif text-spa-charcoal tracking-tight;
+  }
+}
+
+/* Custom fade animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.glass-panel {
+  @apply bg-white/70 backdrop-blur-md border border-white/40 shadow-sm;
+}
+
