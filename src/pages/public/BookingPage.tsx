@@ -100,7 +100,7 @@ export default function BookingPage() {
   const availableDates = generateDates();
 
   const getAvailableTimeSlots = (date: Date): TimeSlot[] => {
-    if (!selectedService || !settings) return [];
+    if (!selectedService) return [];
 
     const weekday = date.getDay();
     const hourRule = hours.find(h => h.weekday === weekday);
@@ -115,10 +115,10 @@ export default function BookingPage() {
     let currentSlotStart = parse(startHourStr, 'HH:mm:ss', date);
     const dayEnd = parse(endHourStr, 'HH:mm:ss', date);
     
-    const interval = settings.slot_interval_minutes || 30;
+    const interval = settings?.slot_interval_minutes || 30;
     const duration = selectedService.duration_minutes;
     
-    const nowWithNotice = addMinutes(new Date(), settings.booking_notice_hours * 60);
+    const nowWithNotice = addMinutes(new Date(), (settings?.booking_notice_hours || 24) * 60);
 
     while (true) {
       const currentSlotEnd = addMinutes(currentSlotStart, duration);
@@ -234,20 +234,26 @@ export default function BookingPage() {
         {step === 1 && (
           <div className="animate-fade-in space-y-6 max-w-2xl mx-auto">
             <h2 className="text-xl text-spa-charcoal mb-6 font-medium text-center">Select a Treatment</h2>
-            {services.map(service => (
-              <div 
-                key={service.id}
-                onClick={() => setSelectedService(service)}
-                className={`p-6 rounded-xl border cursor-pointer transition-all ${selectedService?.id === service.id ? 'border-spa-olive shadow-sm bg-spa-cream' : 'border-gray-200 bg-white hover:border-spa-sage'}`}
-              >
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-lg font-medium text-spa-charcoal">{service.name}</h3>
-                  <span className="text-lg font-serif text-spa-olive">${service.price}</span>
-                </div>
-                <p className="text-sm text-gray-500 mb-4">{service.duration_minutes} minutes</p>
-                {service.description && <p className="text-spa-text-light text-sm">{service.description}</p>}
+            {services.length === 0 ? (
+              <div className="text-center py-12 text-gray-500 bg-white rounded-xl border border-gray-200">
+                Our service menu is currently empty. Please check back later or contact us directly.
               </div>
-            ))}
+            ) : (
+              services.map(service => (
+                <div 
+                  key={service.id}
+                  onClick={() => setSelectedService(service)}
+                  className={`p-6 rounded-xl border cursor-pointer transition-all ${selectedService?.id === service.id ? 'border-spa-olive shadow-sm bg-spa-cream' : 'border-gray-200 bg-white hover:border-spa-sage'}`}
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-lg font-medium text-spa-charcoal">{service.name}</h3>
+                    <span className="text-lg font-serif text-spa-olive">${service.price}</span>
+                  </div>
+                  <p className="text-sm text-gray-500 mb-4">{service.duration_minutes} minutes</p>
+                  {service.description && <p className="text-spa-text-light text-sm">{service.description}</p>}
+                </div>
+              ))
+            )}
             
             <div className="mt-8 flex justify-end">
               <button 
@@ -269,20 +275,26 @@ export default function BookingPage() {
             <div className="mb-8">
               <h3 className="text-sm uppercase tracking-wider text-spa-text-light mb-4">Available Days</h3>
               <div className="flex gap-4 overflow-x-auto pb-4 hide-scrollbar">
-                {availableDates.map((date, idx) => {
-                  const isSelected = selectedDate && isSameDay(date, selectedDate);
-                  return (
-                    <button
-                      key={idx}
-                      onClick={() => { setSelectedDate(date); setSelectedTimeSlot(null); }}
-                      className={`min-w-[100px] p-4 rounded-xl border flex flex-col items-center justify-center transition-all ${isSelected ? 'border-spa-olive bg-spa-olive text-white shadow-sm' : 'border-gray-200 bg-white text-spa-charcoal hover:border-spa-sage'}`}
-                    >
-                      <span className="text-xs uppercase tracking-wider mb-1 opacity-80">{format(date, 'EEE')}</span>
-                      <span className="text-2xl font-serif">{format(date, 'd')}</span>
-                      <span className="text-xs mt-1 opacity-80">{format(date, 'MMM')}</span>
-                    </button>
-                  );
-                })}
+                {availableDates.length === 0 ? (
+                  <div className="w-full text-center py-8 text-gray-500 bg-white rounded-xl border border-gray-200">
+                    No available dates found. The spa may not have configured operating hours yet.
+                  </div>
+                ) : (
+                  availableDates.map((date, idx) => {
+                    const isSelected = selectedDate && isSameDay(date, selectedDate);
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => { setSelectedDate(date); setSelectedTimeSlot(null); }}
+                        className={`min-w-[100px] p-4 rounded-xl border flex flex-col items-center justify-center transition-all ${isSelected ? 'border-spa-olive bg-spa-olive text-white shadow-sm' : 'border-gray-200 bg-white text-spa-charcoal hover:border-spa-sage'}`}
+                      >
+                        <span className="text-xs uppercase tracking-wider mb-1 opacity-80">{format(date, 'EEE')}</span>
+                        <span className="text-2xl font-serif">{format(date, 'd')}</span>
+                        <span className="text-xs mt-1 opacity-80">{format(date, 'MMM')}</span>
+                      </button>
+                    );
+                  })
+                )}
               </div>
             </div>
 
